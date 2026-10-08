@@ -1,0 +1,783 @@
+#:import dp kivy.metrics.dp
+
+# ============================================================ 全局字体与通用样式
+# CJK 字体已在 main.py 注册，这里覆盖所有基础控件的默认字体，
+# 否则中文会显示成方块。
+
+<Label>:
+    font_name: 'CJK'
+    # 深色默认。蓝底白字的 Label 已在各自规则里显式设为白色，
+    # 这里兜底防止浅色背景上的白色文字不可见
+    color: (0.12, 0.14, 0.18, 1)
+
+<Button>:
+    font_name: 'CJK'
+
+<TextInput>:
+    font_name: 'CJK'
+
+<Spinner>:
+    font_name: 'CJK'
+
+<FlatButton@Button>:
+    background_normal: ''
+    background_color: (0.16, 0.50, 0.94, 1)
+    color: (1, 1, 1, 1)
+    font_size: dp(15)
+    bold: True
+
+<FieldLabel@Label>:
+    size_hint_y: None
+    height: dp(20)
+    font_size: dp(12)
+    color: (0.55, 0.58, 0.63, 1)
+    halign: 'left'
+    valign: 'bottom'
+    text_size: self.width, self.height
+
+<FieldInput@TextInput>:
+    size_hint_y: None
+    height: dp(42)
+    multiline: False
+    font_size: dp(16)
+    padding: [dp(10), dp(10)]
+    background_color: (0.95, 0.96, 0.98, 1)
+    background_normal: ''
+    foreground_color: (0.12, 0.14, 0.18, 1)
+    cursor_color: (0.16, 0.50, 0.94, 1)
+
+<AmountField@TextInput>:
+    size_hint_y: None
+    height: dp(52)
+    multiline: False
+    input_filter: 'float'
+    font_size: dp(26)
+    bold: True
+    halign: 'right'
+    padding: [dp(10), dp(12)]
+    background_color: (0.95, 0.96, 0.98, 1)
+    background_normal: ''
+    foreground_color: (0.90, 0.30, 0.28, 1)
+    cursor_color: (0.16, 0.50, 0.94, 1)
+
+# ============================================================ 首页
+
+<HomeScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        # 顶部概览卡
+        BoxLayout:
+            size_hint_y: None
+            height: dp(200)
+            padding: dp(14)
+            canvas.before:
+                Color:
+                    rgba: (0.16, 0.50, 0.94, 1)
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            orientation: 'vertical'
+            spacing: dp(6)
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(30)
+                Label:
+                    id: month_label
+                    font_size: dp(15)
+                    bold: True
+                    color: (1, 1, 1, 0.9)
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+                Label:
+                    text: '轻记账'
+                    font_size: dp(13)
+                    color: (1, 1, 1, 0.75)
+                    halign: 'right'
+                    valign: 'middle'
+                    text_size: self.size
+
+            Label:
+                text: '本月支出'
+                font_size: dp(12)
+                color: (1, 1, 1, 0.7)
+                size_hint_y: None
+                height: dp(18)
+
+            Label:
+                id: expense_label
+                text: '¥0.00'
+                font_size: dp(38)
+                bold: True
+                color: (1, 1, 1, 1)
+                size_hint_y: None
+                height: dp(48)
+
+            Label:
+                id: count_label
+                text: '本月 0 笔'
+                font_size: dp(12)
+                color: (1, 1, 1, 0.75)
+                size_hint_y: None
+                height: dp(18)
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(26)
+                spacing: dp(16)
+                Label:
+                    id: income_label
+                    text: '¥0.00'
+                    font_size: dp(14)
+                    color: (1, 1, 1, 0.95)
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+                Label:
+                    id: balance_label
+                    text: '¥0.00'
+                    font_size: dp(14)
+                    color: (1, 1, 1, 0.95)
+                    halign: 'right'
+                    valign: 'middle'
+                    text_size: self.size
+
+        # 最近账目
+        BoxLayout:
+            size_hint_y: None
+            height: dp(34)
+            padding: [dp(14), 0]
+            Label:
+                text: '最近账目'
+                font_size: dp(14)
+                bold: True
+                color: (0.12, 0.14, 0.18, 1)
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+
+        ScrollView:
+            do_scroll_x: False
+            BoxLayout:
+                id: recent_list
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [dp(8), 0]
+
+        # 底部操作栏
+        BoxLayout:
+            size_hint_y: None
+            height: dp(76)
+            padding: [dp(14), dp(8)]
+            spacing: dp(8)
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 1)
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            FlatButton:
+                text: '拍小票'
+                background_color: (0.18, 0.66, 0.40, 1)
+                on_release: app.pick_and_recognize('receipt')
+
+            FlatButton:
+                text: '传截图记账'
+                font_size: dp(16)
+                on_release: app.pick_and_recognize('screenshot')
+
+        # 底部导航
+        BoxLayout:
+            size_hint_y: None
+            height: dp(52)
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 1)
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: '首页'
+                background_normal: ''
+                background_color: (0.16, 0.50, 0.94, 1)
+                color: (1, 1, 1, 1)
+                font_size: dp(12)
+                on_release: app.goto('home')
+            Button:
+                text: '记一笔'
+                background_normal: ''
+                background_color: (0.93, 0.94, 0.96, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                font_size: dp(12)
+                on_release: app.goto('add')
+            Button:
+                text: '明细'
+                background_normal: ''
+                background_color: (0.93, 0.94, 0.96, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                font_size: dp(12)
+                on_release: app.goto('list')
+            Button:
+                text: '统计'
+                background_normal: ''
+                background_color: (0.93, 0.94, 0.96, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                font_size: dp(12)
+                on_release: app.goto('stats')
+            Button:
+                text: '设置'
+                background_normal: ''
+                background_color: (0.93, 0.94, 0.96, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                font_size: dp(12)
+                on_release: app.goto('settings')
+
+# ============================================================ 识别确认页
+
+<ConfirmScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(12)
+        spacing: dp(8)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(38)
+            spacing: dp(8)
+            Label:
+                text: '确认识别结果'
+                font_size: dp(16)
+                bold: True
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+            Label:
+                id: conf_label
+                text: ''
+                font_size: dp(12)
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
+
+        Label:
+            id: warn_label
+            text: ''
+            font_size: dp(11)
+            color: (0.85, 0.55, 0.10, 1)
+            size_hint_y: None
+            height: dp(18)
+            halign: 'left'
+            valign: 'top'
+            text_size: self.width, self.height
+
+        ScrollView:
+            do_scroll_x: False
+            GridLayout:
+                cols: 1
+                spacing: dp(6)
+                size_hint_y: None
+                height: self.minimum_height
+
+                FieldLabel:
+                    text: '金额'
+                AmountField:
+                    id: amount_input
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(42)
+                    spacing: dp(8)
+                    Spinner:
+                        id: type_spinner
+                        text: '支出'
+                        values: ['支出', '收入']
+                        font_size: dp(15)
+                        on_text: root.on_type_change(self.text)
+                    Spinner:
+                        id: category_spinner
+                        text: '餐饮'
+                        values: ['餐饮']
+                        font_size: dp(15)
+
+                FieldLabel:
+                    text: '商户 / 对方'
+                FieldInput:
+                    id: merchant_input
+
+                FieldLabel:
+                    text: '日期'
+                FieldInput:
+                    id: date_input
+                    hint_text: 'YYYY-MM-DD'
+
+                FieldLabel:
+                    text: '时间'
+                FieldInput:
+                    id: time_input
+                    hint_text: 'HH:MM'
+
+                FieldLabel:
+                    text: '票据类型'
+                Spinner:
+                    id: source_spinner
+                    text: '截图'
+                    values: ['截图', '纸质小票', '手动录入']
+                    font_size: dp(15)
+                    size_hint_y: None
+                    height: dp(42)
+                    on_text: root.on_source_change(self.text)
+
+                FieldLabel:
+                    text: '备注'
+                FieldInput:
+                    id: note_input
+
+                FieldLabel:
+                    text: 'OCR 原始文本（可核对）'
+                TextInput:
+                    id: raw_text
+                    size_hint_y: None
+                    height: dp(110)
+                    multiline: True
+                    readonly: True
+                    font_size: dp(11)
+                    background_color: (0.94, 0.95, 0.97, 1)
+                    foreground_color: (0.45, 0.48, 0.53, 1)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(8)
+            Button:
+                text: '取消'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                on_release: app.goto('home')
+            Button:
+                id: save_btn
+                text: '保存'
+                background_normal: ''
+                background_color: (0.16, 0.50, 0.94, 1)
+                color: (1, 1, 1, 1)
+                bold: True
+                on_release: root.save()
+
+# ============================================================ 手动记账页
+
+<AddScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(12)
+        spacing: dp(8)
+
+        Label:
+            text: '手动记一笔'
+            font_size: dp(16)
+            bold: True
+            size_hint_y: None
+            height: dp(36)
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+        ScrollView:
+            do_scroll_x: False
+            GridLayout:
+                cols: 1
+                spacing: dp(6)
+                size_hint_y: None
+                height: self.minimum_height
+
+                FieldLabel:
+                    text: '金额'
+                AmountField:
+                    id: amount_input
+                    foreground_color: (0.12, 0.14, 0.18, 1)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(42)
+                    spacing: dp(8)
+                    Spinner:
+                        id: type_spinner
+                        text: '支出'
+                        values: ['支出', '收入']
+                        font_size: dp(15)
+                        on_text: root.on_type_change(self.text)
+                    Spinner:
+                        id: category_spinner
+                        text: '餐饮'
+                        values: ['餐饮']
+                        font_size: dp(15)
+
+                FieldLabel:
+                    text: '商户 / 对方'
+                FieldInput:
+                    id: merchant_input
+
+                FieldLabel:
+                    text: '日期'
+                FieldInput:
+                    id: date_input
+
+                FieldLabel:
+                    text: '时间'
+                FieldInput:
+                    id: time_input
+
+                FieldLabel:
+                    text: '备注'
+                FieldInput:
+                    id: note_input
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(8)
+            Button:
+                text: '返回'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                on_release: app.goto('home')
+            Button:
+                text: '保存'
+                background_normal: ''
+                background_color: (0.16, 0.50, 0.94, 1)
+                color: (1, 1, 1, 1)
+                bold: True
+                on_release: root.save()
+
+# ============================================================ 账目明细
+
+<ListScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(8)
+        spacing: dp(6)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            spacing: dp(6)
+            TextInput:
+                id: search_input
+                hint_text: '搜索商户 / 备注 / 分类'
+                multiline: False
+                font_size: dp(14)
+                size_hint_y: None
+                height: dp(40)
+                background_normal: ''
+                background_color: (0.95, 0.96, 0.98, 1)
+                padding: [dp(10), dp(10)]
+                on_text: root.refresh()
+            Button:
+                text: '导出'
+                size_hint_x: None
+                width: dp(64)
+                background_normal: ''
+                background_color: (0.18, 0.66, 0.40, 1)
+                color: (1, 1, 1, 1)
+                font_size: dp(13)
+                on_release: app.export_data()
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(34)
+            spacing: dp(6)
+            Button:
+                id: filt_all
+                text: '全部'
+                background_normal: ''
+                background_color: (0.16, 0.50, 0.94, 1)
+                color: (1, 1, 1, 1)
+                font_size: dp(13)
+                on_release: root.set_filter(None)
+            Button:
+                id: filt_exp
+                text: '支出'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                font_size: dp(13)
+                on_release: root.set_filter('expense')
+            Button:
+                id: filt_inc
+                text: '收入'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                font_size: dp(13)
+                on_release: root.set_filter('income')
+
+        Label:
+            id: summary_label
+            text: ''
+            font_size: dp(12)
+            color: (0.55, 0.58, 0.63, 1)
+            size_hint_y: None
+            height: dp(20)
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+        ScrollView:
+            do_scroll_x: False
+            BoxLayout:
+                id: tx_list
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            Button:
+                text: '返回首页'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                on_release: app.goto('home')
+
+# ============================================================ 统计页
+
+<StatsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(12)
+        spacing: dp(8)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(34)
+            spacing: dp(6)
+            Button:
+                id: rng_week
+                text: '本周'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                font_size: dp(13)
+                on_release: root.set_range('week')
+            Button:
+                id: rng_month
+                text: '本月'
+                background_normal: ''
+                background_color: (0.16, 0.50, 0.94, 1)
+                color: (1, 1, 1, 1)
+                font_size: dp(13)
+                on_release: root.set_range('month')
+            Button:
+                id: rng_year
+                text: '本年'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                font_size: dp(13)
+                on_release: root.set_range('year')
+
+        Label:
+            id: range_title
+            text: '本月'
+            font_size: dp(12)
+            color: (0.55, 0.58, 0.63, 1)
+            size_hint_y: None
+            height: dp(18)
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(80)
+            spacing: dp(6)
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: '支出'
+                    font_size: dp(11)
+                    color: (0.55, 0.58, 0.63, 1)
+                Label:
+                    id: big_expense
+                    text: '¥0'
+                    font_size: dp(17)
+                    bold: True
+                    color: (0.90, 0.30, 0.28, 1)
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: '收入'
+                    font_size: dp(11)
+                    color: (0.55, 0.58, 0.63, 1)
+                Label:
+                    id: big_income
+                    text: '¥0'
+                    font_size: dp(17)
+                    bold: True
+                    color: (0.18, 0.66, 0.40, 1)
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: '结余'
+                    font_size: dp(11)
+                    color: (0.55, 0.58, 0.63, 1)
+                Label:
+                    id: big_balance
+                    text: '¥0'
+                    font_size: dp(17)
+                    bold: True
+                    color: (0.12, 0.14, 0.18, 1)
+
+        Label:
+            id: stats_sub
+            text: ''
+            font_size: dp(12)
+            color: (0.55, 0.58, 0.63, 1)
+            size_hint_y: None
+            height: dp(20)
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+        Label:
+            text: '支出构成'
+            font_size: dp(14)
+            bold: True
+            size_hint_y: None
+            height: dp(26)
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+        ScrollView:
+            do_scroll_x: False
+            BoxLayout:
+                id: cat_list
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(4)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            Button:
+                text: '返回首页'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                on_release: app.goto('home')
+
+# ============================================================ 设置页
+
+<SettingsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(12)
+        spacing: dp(6)
+
+        Label:
+            text: '设置'
+            font_size: dp(17)
+            bold: True
+            size_hint_y: None
+            height: dp(36)
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+        ScrollView:
+            do_scroll_x: False
+            GridLayout:
+                cols: 1
+                spacing: dp(6)
+                size_hint_y: None
+                height: self.minimum_height
+
+                FieldLabel:
+                    text: 'OCR 引擎'
+                Spinner:
+                    id: engine_spinner
+                    text: '百度智能云'
+                    values: ['百度智能云', '腾讯云', '离线模拟（测试）']
+                    font_size: dp(15)
+                    size_hint_y: None
+                    height: dp(42)
+                    on_text: root.on_engine_change(self.text)
+
+                FieldLabel:
+                    text: '百度 API Key'
+                FieldInput:
+                    id: baidu_key
+                    hint_text: '百度智能云控制台获取'
+
+                FieldLabel:
+                    text: '百度 Secret Key'
+                FieldInput:
+                    id: baidu_secret
+                    password: True
+
+                FieldLabel:
+                    text: '腾讯云 SecretId'
+                FieldInput:
+                    id: tc_id
+
+                FieldLabel:
+                    text: '腾讯云 SecretKey'
+                FieldInput:
+                    id: tc_key
+                    password: True
+
+                Label:
+                    id: status_label
+                    text: ''
+                    font_size: dp(12)
+                    size_hint_y: None
+                    height: dp(30)
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+
+                Label:
+                    text: '提示：两家均有每月免费额度，个人使用基本够用。\nKey 仅保存在手机本地，不会上传到任何服务器。'
+                    font_size: dp(11)
+                    color: (0.55, 0.58, 0.63, 1)
+                    size_hint_y: None
+                    height: dp(50)
+                    halign: 'left'
+                    valign: 'top'
+                    text_size: self.width, self.height
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(8)
+            Button:
+                text: '检测连接'
+                background_normal: ''
+                background_color: (1.0, 0.65, 0.10, 1)
+                color: (1, 1, 1, 1)
+                on_release: root.test_conn()
+            Button:
+                text: '保存'
+                background_normal: ''
+                background_color: (0.16, 0.50, 0.94, 1)
+                color: (1, 1, 1, 1)
+                bold: True
+                on_release: root.save()
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            Button:
+                text: '返回首页'
+                background_normal: ''
+                background_color: (0.85, 0.87, 0.90, 1)
+                color: (0.12, 0.14, 0.18, 1)
+                on_release: app.goto('home')
