@@ -14,7 +14,6 @@ version = 1.0.0
 
 requirements = python3,kivy==2.3.0,requests,pillow,plyer,android
 
-# 【关键修复】锁定 p4a 到 buildozer 1.6.0 兼容的版本
 p4a.branch = v2023.09.16
 
 android.api = 33
@@ -24,7 +23,8 @@ android.archs = arm64-v8a, armeabi-v7a
 
 android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_MEDIA_IMAGES
 
-android.orientation = portrait
+orientation = portrait
+android.manifest.orientation = portrait
 
 android.allow_backup = True
 
